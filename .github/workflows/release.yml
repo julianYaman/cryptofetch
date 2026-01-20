@@ -1,0 +1,180 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and Upload Release Assets
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # Linux builds
+          - goos: linux
+            goarch: amd64
+            output: cryptofetch-linux-amd64
+          - goos: linux
+            goarch: arm64
+            output: cryptofetch-linux-arm64
+          - goos: linux
+            goarch: 386
+            output: cryptofetch-linux-386
+          - goos: linux
+            goarch: arm
+            output: cryptofetch-linux-arm
+          # macOS builds
+          - goos: darwin
+            goarch: amd64
+            output: cryptofetch-darwin-amd64
+          - goos: darwin
+            goarch: arm64
+            output: cryptofetch-darwin-arm64
+          # Windows builds
+          - goos: windows
+            goarch: amd64
+            output: cryptofetch-windows-amd64.exe
+          - goos: windows
+            goarch: arm64
+            output: cryptofetch-windows-arm64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Install UPX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx-ucl
+
+      - name: Build binary (uncompressed)
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          go build -ldflags="-s -w" -trimpath -o ${{ matrix.output }} main.go
+
+      - name: Compress with UPX
+        run: |
+          # Skip compression for Windows ARM64 (UPX doesn't support it well)
+          if [[ "${{ matrix.output }}" != "cryptofetch-windows-arm64.exe" ]]; then
+            cp ${{ matrix.output }} ${{ matrix.output }}.uncompressed
+            upx --best --lzma ${{ matrix.output }} || echo "UPX compression failed, using uncompressed binary"
+          else
+            echo "Skipping UPX for Windows ARM64 (limited support)"
+          fi
+
+      - name: Generate SHA256 checksums
+        run: |
+          sha256sum ${{ matrix.output }} > ${{ matrix.output }}.sha256
+          if [ -f "${{ matrix.output }}.uncompressed" ]; then
+            sha256sum ${{ matrix.output }}.uncompressed > ${{ matrix.output }}.uncompressed.sha256
+          fi
+
+      - name: Upload compressed binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ matrix.output }}
+          asset_name: ${{ matrix.output }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ matrix.output }}.sha256
+          asset_name: ${{ matrix.output }}.sha256
+          asset_content_type: text/plain
+
+      - name: Upload uncompressed binary (if exists)
+        if: ${{ hashFiles(format('{0}.uncompressed', matrix.output)) != '' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ matrix.output }}.uncompressed
+          asset_name: ${{ matrix.output }}.uncompressed
+          asset_content_type: application/octet-stream
+        continue-on-error: true
+
+      - name: Upload uncompressed checksum (if exists)
+        if: ${{ hashFiles(format('{0}.uncompressed.sha256', matrix.output)) != '' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ matrix.output }}.uncompressed.sha256
+          asset_name: ${{ matrix.output }}.uncompressed.sha256
+          asset_content_type: text/plain
+        continue-on-error: true
+
+  # Generate combined checksums file for all binaries
+  checksums:
+    name: Generate Combined Checksums
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all release assets
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const release = context.payload.release;
+            
+            // Wait a bit for assets to be uploaded
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            
+            const assets = await github.rest.repos.listReleaseAssets({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.id
+            });
+            
+            let checksumContent = '';
+            for (const asset of assets.data) {
+              if (asset.name.endsWith('.sha256')) {
+                const assetData = await github.rest.repos.getReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  asset_id: asset.id,
+                  headers: {
+                    Accept: 'application/octet-stream'
+                  }
+                });
+                checksumContent += Buffer.from(assetData.data).toString('utf-8');
+              }
+            }
+            
+            fs.writeFileSync('SHA256SUMS', checksumContent);
+
+      - name: Upload combined checksums
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./SHA256SUMS
+          asset_name: SHA256SUMS
+          asset_content_type: text/plain
+        continue-on-error: true

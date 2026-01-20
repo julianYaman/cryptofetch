@@ -1,0 +1,55 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Compiled binary
+cryptofetch
+cryptofetch-*
+!cryptofetch.rb
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+*.snap
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# GoReleaser
+.goreleaser/
+
+# Package manager build files
+pkg/
+src/
+*.pkg.tar.*
+.SRCINFO
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+docs
