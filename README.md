@@ -1,15 +1,17 @@
 # cryptofetch
 
-[![GitHub release](https://img.shields.io/github/v/release/julianYaman/cryptofetch)](https://github.com/julianYaman/cryptofetch/releases)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/julianYaman/cryptofetch)](https://go.dev/)
-[![License](https://img.shields.io/github/license/julianYaman/cryptofetch)](https://github.com/julianYaman/cryptofetch/blob/main/LICENSE)
-[![Platform Support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)](https://github.com/julianYaman/cryptofetch/releases)
+<p align="center">
+    <img src="https://img.shields.io/github/release/julianYaman/cryptofetch.svg" alt="GitHub release" />
+    <img src="https://img.shields.io/github/go-mod/go-version/julianYaman/cryptofetch.svg" alt="Go Version" />
+    <img src="https://img.shields.io/github/license/julianYaman/cryptofetch.svg" alt="License" />
+    <img src="https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg" alt="Platform Support" />
+</p>
 
-<img src=".github/assets/example.png" alt="cryptofetch example" width="500"/>
+<p align="center">
+    <img src=".github/assets/example.png" alt="cryptofetch example" width="500" />
+</p>
 
 A neofetch-style terminal application for displaying cryptocurrency prices and statistics.
-
-**Binary Size:** ~3MB compressed (8MB uncompressed) | **Dependencies:** None (static binary)
 
 ## Features
 
@@ -45,6 +47,7 @@ Choose your preferred installation method:
 ### Package Managers (Recommended)
 
 #### Arch Linux (AUR)
+
 ```bash
 yay -S cryptofetch
 # or
@@ -52,19 +55,16 @@ paru -S cryptofetch
 ```
 
 #### macOS / Linux (Homebrew)
+
 ```bash
 brew tap julianyaman/cryptofetch
-brew install cryptofetch
-```
-
-#### Linux (Snap)
-```bash
-sudo snap install cryptofetch
+brew install cryptofetch 
 ```
 
 ### Direct Installation
 
 #### Quick Install Script
+
 ```bash
 # Install to /usr/local/bin (requires sudo)
 curl -sSL https://raw.githubusercontent.com/julianYaman/cryptofetch/main/scripts/install.sh | bash
@@ -74,6 +74,7 @@ curl -sSL https://raw.githubusercontent.com/julianYaman/cryptofetch/main/scripts
 ```
 
 #### Go Install
+
 ```bash
 go install github.com/julianYaman/cryptofetch@latest
 ```
@@ -83,11 +84,13 @@ go install github.com/julianYaman/cryptofetch@latest
 Download pre-built binaries from the [Releases](https://github.com/julianYaman/cryptofetch/releases) page.
 
 Available platforms:
+
 - **Linux:** amd64, arm64, 386, arm
 - **macOS:** amd64 (Intel), arm64 (Apple Silicon)
 - **Windows:** amd64, arm64
 
 After downloading:
+
 ```bash
 # Linux/macOS
 chmod +x cryptofetch-*
@@ -104,6 +107,7 @@ sudo mv cryptofetch-* /usr/local/bin/cryptofetch
 ### Basic Usage
 
 Display Bitcoin information (default):
+
 ```bash
 cryptofetch
 ```
@@ -111,11 +115,13 @@ cryptofetch
 ### Specify a Cryptocurrency
 
 Using the `--currency` flag:
+
 ```bash
 cryptofetch --currency ethereum
 ```
 
 Using the `--cur` shorthand:
+
 ```bash
 cryptofetch --cur solana
 ```
@@ -158,6 +164,7 @@ For the full list, visit [CoinGecko](https://www.coingecko.com/) and use the coi
 If you want to build cryptofetch yourself:
 
 ### Requirements
+
 - Go 1.21 or higher
 
 ### Build Steps
@@ -180,23 +187,14 @@ upx --best --lzma cryptofetch
 
 ---
 
-## Distribution & Maintenance
-
-For maintainers and contributors, see [DISTRIBUTION.md](DISTRIBUTION.md) for:
-- Release process and checklist
-- Package manager update instructions
-- Testing procedures
-- Troubleshooting guides
-
----
-
 ## Contributing
 
 Contributions are welcome! Feel free to:
+
 - Report bugs via [GitHub Issues](https://github.com/julianYaman/cryptofetch/issues)
 - Suggest new features
-- Submit pull requests
-- Add more ASCII art for cryptocurrencies
+- [Add more ASCII art for cryptocurrencies](./docs/add_new_currencies.md)
+- Please commit in this format: `feat: add new feature`, `fix: fix bug`, etc.
 
 ### Development Setup
 
@@ -209,10 +207,6 @@ cd cryptofetch
 
 # Test your changes
 go run main.go --cur bitcoin
-
-# Build and test
-go build -o cryptofetch main.go
-./cryptofetch --cur ethereum
 ```
 
 ---

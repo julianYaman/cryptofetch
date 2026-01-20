@@ -52,4 +52,4 @@ tmp/
 temp/
 *.tmp
 
-docs
+package-docs
