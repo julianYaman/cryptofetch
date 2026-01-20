@@ -1,4 +1,4 @@
-# cryptofetch
+<h1 align="center">cryptofetch</h1>
 
 <p align="center">
     <img src="https://img.shields.io/github/release/julianYaman/cryptofetch.svg" alt="GitHub release" />
@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-    <img src=".github/assets/example.png" alt="cryptofetch example" width="500" />
+    <img src=".github/assets/demo-cryptofetch.gif" alt="cryptofetch example" width="500" />
 </p>
 
 A neofetch-style terminal application for displaying cryptocurrency prices and statistics.
