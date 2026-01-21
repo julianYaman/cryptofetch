@@ -17,7 +17,10 @@ To add new ASCII art for cryptocurrencies in Cryptofetch, follow these steps:
 
 3. **Add New Entry**:
 
-- Add a new entry to the `asciiArt` map with the cryptocurrency's CoinGecko ID as the key and the ASCII art as the value.
+- Add a new entry to the `asciiArt` map with the cryptocurrency's CoinGecko API ID as the key and the ASCII art as the value.
+
+- You can find the CoinGecko API ID here:
+  <p><img src="./../.github/assets/api-id-coingecko.png" alt="CoinGecko API ID" width="300"/></p>
 
 4. **Pull Request**:
 
